@@ -3,7 +3,7 @@ let adminProducts = [];
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let me=null, currentFilter='14', reminderRows=[], team=[], products=[], profile=null;
-const genId=()=>(typeof crypto!=='undefined'&&typeof crypto.randomUUID==='function')?crypto.randomUUID():'req_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,11);
+const genId=()=>(typeof crypto!=='undefined'&&typeof crypto.randomUUID==='function')?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});
 const money=v=>'₹'+Number(v||0).toLocaleString('en-IN');
 const date=v=>v?new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short',year:'numeric'}).format(new Date(v.length===10?v+'T12:00:00Z':v)):'—';
 const status=v=>`<span class="badge ${esc(v)}">${esc(v)}</span>`;
@@ -248,12 +248,16 @@ document.addEventListener('input',event=>{
 });
 async function submitEnquiry(form,d){
  const addons=new FormData(form).getAll('addons');
- // Open during the user's click so async CRM saving does not trigger popup blocking.
- const popup=window.open('about:blank','_blank');if(popup)popup.opener=null;
+ let popup=null;
+ try{popup=window.open('about:blank','_blank');if(popup)popup.opener=null;}catch{}
  let result;
  try{result=await api('/enquiries','POST',{...d,addons,expected_price:Number(d.expected_price)});}catch(error){if(popup)popup.close();throw error;}
  dialog('Your enquiry is saved',`<p>Your product, occasion and add-on choices are saved with our team.</p><p class="small">Reference: ${esc(result.id)}</p><p>Send the prepared message in WhatsApp to continue. If it didn’t open, use the button below.</p><a href="${esc(result.whatsapp_url)}" target="_blank" rel="noopener noreferrer" class="button">Open WhatsApp ↗</a><details class="package-inclusions"><summary>View your enquiry</summary><p class="enquiry-message">${esc(result.message)}</p></details>`);
- if(popup&&!popup.closed)popup.location.replace(result.whatsapp_url);
+ if(popup&&!popup.closed){
+   popup.location.replace(result.whatsapp_url);
+ } else {
+   window.location.href=result.whatsapp_url;
+ }
 }
 let enquiryRows=[];
 async function enquiriesPage(){
