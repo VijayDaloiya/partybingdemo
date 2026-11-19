@@ -1,0 +1,12 @@
+# Caddy reverse proxy with automatic HTTPS
+# Replace :80 with your domain (e.g. partybing.in) once your DNS points to the server IP.
+
+:80 {
+    reverse_proxy web:3000
+}
+
+# When you have a domain, comment out the block above and uncomment this block:
+# your-domain.com, www.your-domain.com {
+#     encode gzip zstd
+#     reverse_proxy web:3000
+# }

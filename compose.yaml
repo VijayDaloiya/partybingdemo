@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      BUSINESS_TIMEZONE: Asia/Kolkata
+      LEAP_DAY_POLICY: feb28
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    volumes:
+      - party-bing-data:/app/data
+    restart: unless-stopped
+  scheduler:
+    build: .
+    command: ["node", "scripts/scheduler.js"]
+    environment:
+      BUSINESS_TIMEZONE: Asia/Kolkata
+    volumes:
+      - party-bing-data:/app/data
+    restart: unless-stopped
+volumes:
+  party-bing-data:

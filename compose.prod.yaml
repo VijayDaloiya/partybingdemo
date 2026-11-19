@@ -1,0 +1,41 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+  web:
+    build: .
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_PATH: /app/data/party-bing.sqlite
+      BUSINESS_TIMEZONE: ${BUSINESS_TIMEZONE:-Asia/Kolkata}
+      LEAP_DAY_POLICY: ${LEAP_DAY_POLICY:-feb28}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://129.225.77.91}
+    volumes:
+      - ./data:/app/data
+
+  scheduler:
+    build: .
+    command: ["node", "scripts/scheduler.js"]
+    restart: unless-stopped
+    environment:
+      DATABASE_PATH: /app/data/party-bing.sqlite
+      BUSINESS_TIMEZONE: ${BUSINESS_TIMEZONE:-Asia/Kolkata}
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  caddy_data:
+  caddy_config:
