@@ -38,7 +38,8 @@ export function makeServer(db) {
           content=content.toString();
           const directory=p==='/pune-decoration';
           if(directory)content=content.replace('<script type="module" src="/app.js"></script>','');
-          content=content.replace('<div id="app"></div>',`<div id="app">${directory?locationPage(db):catalogFallback(db,url)}</div>`);
+          const fallback=directory?locationPage(db):(catalogFallback(db,url)?`<noscript>${catalogFallback(db,url)}</noscript>`:'');
+          content=content.replace('<div id="app"></div>',`<div id="app">${fallback}</div>`);
           const publicPage=['/','/packages','/pune-decoration'].includes(p)||p.startsWith('/services/');
           if(publicPage){
             const title=directory?'Balloon decoration in Pune — Localities & enquiries | Party Bing':p.startsWith('/services/')?p.slice(10).replaceAll('-',' ')+' in Pune | Party Bing':'Party Bing | Balloon & birthday decoration in Pune';
