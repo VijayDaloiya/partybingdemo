@@ -22,7 +22,7 @@ services:
       BUSINESS_TIMEZONE: ${BUSINESS_TIMEZONE:-Asia/Kolkata}
       LEAP_DAY_POLICY: ${LEAP_DAY_POLICY:-feb28}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
-      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://129.225.77.91}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://partybing.in}
     volumes:
       - ./data:/app/data
 
